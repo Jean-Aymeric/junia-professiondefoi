@@ -16,6 +16,12 @@ def transformPdfToTxt(pdfFileName: str, txtFileName: str) -> None:
         file.close()
 
 
+def deleteAllTxtInDirectory(directoryName: str) -> None:
+    for file in os.listdir(directoryName):
+        if file.endswith(".txt"):
+            os.remove(directoryName + "/" + file)
+
+
 def getPdfNamesFromDirectory(directoryName: str) -> list[str]:
     pdfFileNames = []
     for file in os.listdir(directoryName):
@@ -31,6 +37,7 @@ def getTxtFileNameFromPdfFileName(pdfFileName: str) -> str:
 
 def transformAllPdfToTxt():
     pdfFileNames = getPdfNamesFromDirectory("docs-start")
+    deleteAllTxtInDirectory("docs-txt")
     for pdfFileName in pdfFileNames:
         transformPdfToTxt("docs-start/" + pdfFileName,
                           "docs-txt/" + getTxtFileNameFromPdfFileName(pdfFileName))

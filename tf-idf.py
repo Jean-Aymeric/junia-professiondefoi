@@ -1,19 +1,36 @@
+import math
 import os
 
 
-def getAllTF() -> dict:
+def getMatrix_TF_IDF() -> dict:
     fileNames = getCleanTxtNamesFromDirectory("docs-txt-cleaned")
-    words = []
-    for fileName in fileNames:
-        text = readTxtFile("docs-txt-cleaned/" + fileName)
-        words = list(set(words + getAllWordsFromText(text)))
+    words = getAllWords(fileNames)
 
     fileName_Words_tf = {}
     for fileName in fileNames:
         text = readTxtFile("docs-txt-cleaned/" + fileName)
         fileName_Words_tf[fileName] = getTFFromText(text, words)
 
-    return fileName_Words_tf
+    return calculateTF_IDF(fileName_Words_tf, getAllIDF(fileName_Words_tf, words))
+
+
+def calculateTF_IDF(fileName_Words_tf: dict, idfs: dict) -> dict:
+    matrix_TF_IDF = {}
+    for fileName in fileName_Words_tf.keys():
+        matrix_TF_IDF[fileName] = {}
+        tf_idf = {}
+        for word in idfs:
+            tf_idf[word] = fileName_Words_tf[fileName][word] * idfs[word]
+        matrix_TF_IDF[fileName] = tf_idf
+    return matrix_TF_IDF
+
+
+def getAllWords(fileNames) -> list[str]:
+    words = []
+    for fileName in fileNames:
+        text = readTxtFile("docs-txt-cleaned/" + fileName)
+        words = list(set(words + getAllWordsFromText(text)))
+    return words
 
 
 def getTFFromText(text: str, words: [str]) -> dict:
@@ -57,7 +74,41 @@ def getCleanTxtNamesFromDirectory(directoryName: str) -> list[str]:
     return txtFileNames
 
 
-d = getAllTF()
+def countFiles(directoryName: str) -> int:
+    nbFiles = 0
+    for file in os.listdir(directoryName):
+        if file.endswith(".txt"):
+            nbFiles += 1
+
+    return nbFiles
+
+
+def countFilesWithWord(fileName_Words_tf: dict, word: str) -> int:
+    nbFiles = 0
+    for fileName in fileName_Words_tf.keys():
+        if fileName_Words_tf[fileName][word] > 0:
+            nbFiles += 1
+    return nbFiles
+
+
+def calcIDF(nbTotalFiles: int, nbFilesContainingWord: int) -> float:
+    if nbFilesContainingWord == 0:
+        return 0
+    return math.log10(nbTotalFiles / nbFilesContainingWord)
+
+
+def getAllIDF(fileName_Words_tf: dict, words: list[str]) -> dict:
+    idfs = {}
+    nbTotalFiles = countFiles("docs-txt-cleaned")
+    for word in words:
+        idfs[word] = calcIDF(nbTotalFiles, countFilesWithWord(fileName_Words_tf, word))
+    return idfs
+
+
+d = getMatrix_TF_IDF()
 for e in d.keys():
     print(e)
     print(d[e])
+# print("Documents : ", countFiles("docs-txt-cleaned"))
+# print("Présent :", countFilesWithWord(d, "courses"))
+# print(calcIDF(countFiles("docs-txt-cleaned"), countFilesWithWord(d, "courses")))

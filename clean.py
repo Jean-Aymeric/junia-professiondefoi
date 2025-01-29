@@ -13,10 +13,16 @@ def getTxtNamesFromDirectory(directoryName: str) -> list[str]:
 def deleteAllSpecialCharacterFromStr(textToClean) -> str:
     charactersToDelete = ["!", "\"", "#", "$", "%", "&", "'", "(", ")", "*", "+", ",", "-", ".", "/", ":", ";", "<",
                           "=", ">", "?", "@", "[", "\\", "]", "^", "_", "`", "{", "|", "}", "~", "\t", "’", "0", "1",
-                          "2", "3", "4", "5", "6", "7", "8", "9", "•", "–"]
+                          "2", "3", "4", "5", "6", "7", "8", "9", "•", "–", "  ", " ", "\xa0"]
     for character in charactersToDelete:
         textToClean = textToClean.replace(character, " ")
     return textToClean
+
+
+def deleteAllTxtInDirectory(directoryName: str) -> None:
+    for file in os.listdir(directoryName):
+        if file.endswith(".txt"):
+            os.remove(directoryName + "/" + file)
 
 
 def deleteAllCRFromStr(textToClean: str) -> str:
@@ -40,6 +46,7 @@ def saveStrToTxt(textToSave, txtFileName):
 
 def cleanAllTxtFiles():
     txtFileNames = getTxtNamesFromDirectory("docs-txt")
+    deleteAllTxtInDirectory("docs-txt-cleaned")
     for txtFileName in txtFileNames:
         textToClean = readTxt("docs-txt/" + txtFileName)
         textToClean = deleteAllSpecialCharacterFromStr(textToClean)

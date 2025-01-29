@@ -20,7 +20,11 @@ def calculateTF_IDF(fileName_Words_tf: dict, idfs: dict) -> dict:
         matrix_TF_IDF[fileName] = {}
         tf_idf = {}
         for word in idfs:
-            tf_idf[word] = fileName_Words_tf[fileName][word] * idfs[word]
+            tf_idf[word] = {
+                "tf": fileName_Words_tf[fileName][word],
+                "idf": idfs[word],
+                "tf-idf": fileName_Words_tf[fileName][word] * idfs[word]
+            }
         matrix_TF_IDF[fileName] = tf_idf
     return matrix_TF_IDF
 

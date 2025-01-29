@@ -49,7 +49,12 @@ def cleanAllTxtFiles():
     deleteAllTxtInDirectory("docs-txt-cleaned")
     for txtFileName in txtFileNames:
         textToClean = readTxt("docs-txt/" + txtFileName)
-        textToClean = deleteAllSpecialCharacterFromStr(textToClean)
-        textToClean = deleteAllCRFromStr(textToClean)
-        textToClean = replaceUpperCaseWithLowerCase(textToClean)
+        textToClean = cleanText(textToClean)
         saveStrToTxt(textToClean, "docs-txt-cleaned/" + txtFileName)
+
+
+def cleanText(textToClean: str) -> str:
+    textToClean = deleteAllSpecialCharacterFromStr(textToClean)
+    textToClean = deleteAllCRFromStr(textToClean)
+    textToClean = replaceUpperCaseWithLowerCase(textToClean)
+    return textToClean

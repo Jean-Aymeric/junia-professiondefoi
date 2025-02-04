@@ -42,7 +42,13 @@ def norm(vector: dict) -> float:
 
 
 def similarity(vector1: dict, vector2: dict) -> float:
-    return scalar(vector1, vector2) / (norm(vector1) * norm(vector2))
+    normVector1 = norm(vector1)
+    if normVector1 == 0:
+        return 0
+    normVector2 = norm(vector2)
+    if normVector2 == 0:
+        return 0
+    return scalar(vector1, vector2) / (normVector1 * normVector2)
 
 
 def extractVectorFromTF_IDF(tf_idf: dict) -> dict:
@@ -52,25 +58,12 @@ def extractVectorFromTF_IDF(tf_idf: dict) -> dict:
     return result
 
 
-search = getSearch()
-search = cleanSearch(search)
-
-
-def getAnswerFromSearch():
+def getAnswerFromSearch(search):
     global answer, fileName
     words_idf = tf_idf.getMatrix_TF_IDF()
     searchVector = vectorizeSearch(search, words_idf)
-    for word in searchVector:
-        if searchVector[word] != 0:
-            print(word, ":", searchVector[word])
     answer = {}
     for fileName in words_idf.keys():
         fileVector = extractVectorFromTF_IDF(words_idf[fileName])
         answer[fileName] = similarity(searchVector, fileVector)
     return answer
-
-
-answer = getAnswerFromSearch()
-
-for fileName in answer:
-    print(fileName, ":", answer[fileName])
